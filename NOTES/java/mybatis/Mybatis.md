@@ -358,3 +358,88 @@ collection=”suibian”或者 collection=”suibian.entry
 </insert>
 ```
 
+## Mybatis缓存
+
+提升查询的效率和减少数据库的压 力
+
+Mybatis 会将相同查询条件的 SQL 语句的查询结果存储在 内存或者某种缓存介质当中，
+
+当下次遇到相同的查询 SQL 时候不在执行该 SQL，
+
+而是直接从 缓存中获取结果，减少服务器的压力，
+
+尤其是在查询越多、缓存命中率越高的情况下，使用 缓存对性能的提高更明显
+
+Mybatis 会将相同查询条件的 SQL 语句的查询结果存储在 内存或者某种缓存介质当中，当下次遇到相同的查询 SQL 时候不在执行该 SQL，而是直接从 缓存中获取结果，减少服务器的压力，尤其是在查询越多、缓存命中率越高的情况下，使用 缓存对性能的提高更明显
+
+###  一级缓存
+
+一级缓存也叫本地缓存，MyBatis 的一级缓存是在会话（SqlSession）层面进行缓存的。 MyBatis 的一级缓存是默认开启的，不需要任何的配置。默认开启。
+
+![image-20220117081626076](C:\Users\郝康将\AppData\Roaming\Typora\typora-user-images\image-20220117081626076.png)
+
+一级缓存的生命周期：
+
+Mybatis开启一个数据库会话是，会创建一个新的SqlSession对象，SqlSession对象中会有一个新的Executor对象。Executor对象中持有一个新的PerpetualCache对象；当会话结束时，SqlSession对象及内部的Executor对象还有PerpetualCache对象也一并释放掉。（随SqlSession对象的产生和消亡）
+
+如果SqlSession调用了close方法，会释放掉以及缓存PerPetualCache对象，一级缓存将不可用。（SqlSession消亡）
+
+如果调用了clearCache（）会清空PerpetualCache对象中的数据，但时该对象仍可用。
+
+SqlSession中执行了任何一个update操作（update（），delete(),insert()），都会清空PerpetualCache对象的数据，但该对象可以继续使用。
+
+### 二级缓存
+
+二级缓存是 SqlSessionFactory 上的缓存，可以是由一个 SqlSessionFactory 创 建的不同的 SqlSession 之间共享缓存数据。
+
+默认并不开启。
+
+SqlSession 在执行 commit()或者 close()的时候将数据放入到二级缓存。
+
+![image-20220117085104671](C:\Users\郝康将\AppData\Roaming\Typora\typora-user-images\image-20220117085104671.png)
+
+![image-20220117085117607](C:\Users\郝康将\AppData\Roaming\Typora\typora-user-images\image-20220117085117607.png)
+
+二级缓存的配置方式：
+
+实现二级缓存的时候，MyBatis 要求缓存的 POJO 必须 是可序列化的， 也就是要求实现 Serializable 接口。
+
+在映射配置文件中配置就可以 开启缓存了。
+
+二级缓存特点：
+
+映射语句文件中的所有 select 语句将会被缓存。 
+
+映射语句文件中的所有 insert、update 和 delete 语句会刷新缓存。 
+
+二级缓存是以 namespace 为单位的，不同 namespace 下的操作互不影响 
+
+如果在加入标签的前提下让个别 select 元素不使用缓存，可以使用 useCache 属性，设置为 false。
+
+ 缓存会使用默认的 Least Recently Used（LRU，最近最少使用的）算法来收回。 
+
+根据时间表，比如 No Flush Interval,（CNFI 没有刷新间隔），缓存不会以任何时间顺序 来刷新。 （只有DML才会刷新）
+
+缓存会存储列表集合或对象(无论查询方法返回什么)的 1024 个引用 
+
+缓存会被视为是 read/write(可读/可写)的缓存，意味着对象检索不是共享的，而且可以 安全的被调用者修改，不干扰其他调用者或线程所做的潜在修改。
+
+cache 标签的可选属性：
+
+![image-20220117085351117](C:\Users\郝康将\AppData\Roaming\Typora\typora-user-images\image-20220117085351117.png)
+
+测试二级缓存：
+
+在 mybatis-config.xml 文件中的标签配置开启二级缓存。cacheEnabled 的默认 值就是 true，所以这步的设置可省略
+
+```
+<settings>
+<setting name="cacheEnabled" value="true"/>
+</settings>
+
+ 在映射配置文件中添加<cache/>
+<mapper namespace="com.bjsxt.mapper.UsersMapper">
+	<cache/>
+</mapper>
+```
+
