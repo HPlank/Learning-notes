@@ -555,3 +555,13 @@ pageInfo.getPageNum() 获取当前页。
 pageInfo.getSize() 获取每页显示的条数。
 ```
 
+### Mybatis 与 Servlet整合
+
+Open Session In View：模式
+
+Open Session in view 是将一个数据库会话绑定到当前请求线程中，在请求期间一直保持数据库会话对象处于 Open，使数据库会话对象在i请求的整个期间都可以使用。
+
+直达有DML操作产生响应后关闭当前数据库会话对象
+
+![image-20220117235919766](C:\Users\郝康将\AppData\Roaming\Typora\typora-user-images\image-20220117235919766.png)
+
