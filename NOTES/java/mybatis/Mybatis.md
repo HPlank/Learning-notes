@@ -443,3 +443,88 @@ cache 标签的可选属性：
 </mapper>
 ```
 
+## Mybatis 的多表关联查询
+
+resultMap 的基础使用场景：
+
+当查询到的结果集的列名与 POJO 的属性名不匹配时， Mybatis 是无法完成影射处理的。
+
+解决方案：
+
+1.定义列别名
+
+2.通过resultMap标签中定义映射关系解决改问题
+
+### 通过resultMap标签解决实体与结果集的映射
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjsxt.mapper.UsersMapper">
+	<resultMap id="usersMapper" type="com.bjsxt.pojo.Users">
+		<id property="userid" column="id"/>
+		<result property="username" column="name"/>
+		<result property="usersex" column="sex"/>
+	</resultMap>
+	<select id="selectUsersAll" resultMap="usersMapper">
+		select userid as id ,username as name ,usersex as sex from users
+	</select>
+</mapper>
+```
+
+### 一对一的关联查询
+
+#### < association>标签
+
+< association>标签是处理单一的关联对象(处理单一属性的关联关系)。 
+
+property：指定关联对象的属性 
+
+javaType：关联对象的类型（可以省略） 
+
+select：执行一个新的查询 
+
+column：在新的查询中用哪个列的值作为查询条件
+
+#### < collection>标签
+
+< collection>标签是处理所关联对象是多个的(处理关联属性是集合时的关联关系)。 
+
+property：指定关联对象的属性 
+
+javaType：关联对象的类型（可以省略。默认为 List 类型，如果集合是 Set类型时需要配置并给定Set的全名）
+
+ofType：指定集合里存放的对象类型 
+
+select：执行一个新的查询 
+
+column：在新的查询中用哪个列的值作为查询条件
+
+###  Mybatis 多表查询中的数据加载方式
+
+#### 连接查询
+
+使用内连接或者外连接的方式查询数据。 
+
+优点：在一次查询中完成数据的查询操作。降低查询次数提高查询效率。
+
+ 缺点：如果查询返回的结果集较多会消耗内存空间。
+
+#### N+1 次查询 
+
+分解式查询，将查询分解成多个 SQL 语句。 
+
+优点：配和着延迟加载可实现结果集分步获取，节省内存空间。 
+
+缺点：由于需要执行多次查询，相比连接查询效率低。
+
+N+1 查询的加载方式：
+
+立即加载：再一次查询中执行所有的sql
+
+延迟加载：在一次查询中执行部分sql语句，根据操作映射的关联触发其他查询
+
+
+
