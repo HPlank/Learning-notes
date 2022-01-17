@@ -538,5 +538,20 @@ N+1 查询的加载方式：
 
 延迟加载：在一次查询中执行部分sql语句，根据操作映射的关联触发其他查询
 
+### PageHelperf分页
 
+```
+PageHelper.startPage(int pageNum,int pageSize);
+
+给定分页参数，该方法需要在执行查询之前调用
+pageNum：起始的页数，从 1 开始计算。
+pageSize：每页显示的条数。
+PageInfo 对象
+存放分页结果对象
+pageInfo.getList() 获取分页查询结果。
+pageInfo.getTotal() 获取查询总条数。
+pageInfo.getPages() 获取总页数。
+pageInfo.getPageNum() 获取当前页。
+pageInfo.getSize() 获取每页显示的条数。
+```
 
